@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PrimeState Apartments | Rent in All 50 States</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', sans-serif; }
+        body { background: #f5f7fa; color: #333; }
+        header { background: #1a365d; color: white; padding: 1rem 5%; display: flex; justify-content: space-between; align-items: center; }
+        .logo { font-size: 1.5rem; font-weight: 700; }
+        .hero { background: linear-gradient(rgba(0,0,0,0.5), rgba(0,0,0,0.5)), url('https://images.unsplash.com/photo-1560448204-e02f11c3d0e2') center/cover; color: white; text-align: center; padding: 5rem 1rem; }
+        .hero h1 { font-size: 2.5rem; margin-bottom: 1rem; }
+        .filters { padding: 2rem 5%; background: white; display: flex; gap: 1rem; flex-wrap: wrap; }
+        select, button { padding: 0.7rem; border: 1px solid #ddd; border-radius: 6px; }
+        .listings { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 2rem; padding: 2rem 5%; }
+        .card { background: white; border-radius: 12px; overflow: hidden; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
+        .card img { width: 100%; height: 200px; object-fit: cover; }
+        .card-body { padding: 1.5rem; }
+        .price { font-size: 1.4rem; color: #1a365d; font-weight: 700; margin: 0.5rem 0; }
+        .features { display: flex; gap: 1rem; font-size: 0.9rem; color: #666; margin: 1rem 0; }
+        .apply-btn { background: #38a169; color: white; border: none; padding: 0.8rem; width: 100%; border-radius: 6px; font-weight: 600; cursor: pointer; }
+        .apply-btn:hover { background: #2f855a; }
+        
+        /* Payment Modal */
+        .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.7); z-index: 100; }
+        .modal-content { background: white; max-width: 400px; margin: 10% auto; padding: 2rem; border-radius: 12px; text-align: center; }
+        .qr-code { width: 200px; height: 200px; margin: 1rem auto; background: #f0f0f0; }
+        .close { float: right; font-size: 1.5rem; cursor: pointer; }
+        footer { background: #1a365d; color: white; text-align: center; padding: 2rem; margin-top: 3rem; }
+        .disclaimer { font-size: 0.8rem; opacity: 0.8; margin-top: 1rem; }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="logo">PrimeState Apartments</div>
+        <div>Licensed Property Listings</div>
+    </header>
+
+    <section class="hero">
+        <h1>Find Your Next Home in All 50 States</h1>
+        <p>Verified listings. Secure application. $50 application fee.</p>
+    </section>
+
+    <div class="filters">
+        <select id="stateFilter">
+            <option value="">All States</option>
+            <option value="CA">California</option>
+            <option value="TX">Texas</option>
+            <option value="FL">Florida</option>
+            <option value="NY">New York</option>
+        </select>
+        <select id="bedroomFilter">
+            <option value="">Any Bedrooms</option>
+            <option value="1">1 Bed</option>
+            <option value="2">2 Beds</option>
+            <option value="3">3+ Beds</option>
+        </select>
+    </div>
+
+    <div class="listings" id="listings">
+        <!-- Listings injected by JS -->
+    </div>
+
+    <!-- Payment Modal -->
+    <div id="paymentModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeModal()">&times;</span>
+            <h2>Pay $50 Application Fee</h2>
+            <p>Scan with MiniPay or send to:</p>
+            <img src="YOUR_QR_CODE_IMAGE_URL" alt="MiniPay QR" class="qr-code">
+            <p><strong>MiniPay Number:</strong> +256 741 652963</p>
+            <p><strong>Amount:</strong> 50 USDT</p>
+            <p><strong>Network:</strong> Celo only ⚠️</p>
+            <small>Wrong network = lost funds. Include your email in payment note.</small>
+        </div>
+    </div>
+
+    <footer>
+        <p>© 2026 PrimeState Apartments. Equal Housing Opportunity.</p>
+        <p class="disclaimer">
+            DISCLAIMER: Application fees are non-refundable. All applicants subject to credit/background check. 
+            We are not licensed brokers in all states. Verify listings independently. 
+            MiniPay payments are final. Not FDIC insured.
+        </p>
+    </footer>
+
+    <script>
+        const apartments = [
+            {
+                id: 1, state: "CA", city: "Los Angeles", beds: 2, baths: 2, price: 2500,
+                img: "https://images.unsplash.com/photo-1522708323590-d24dbb6b0267",
+                features: ["Pool", "Gym", "Parking"]
+            },
+            {
+                id: 2, state: "TX", city: "Austin", beds: 1, baths: 1, price: 1800,
+                img: "https://images.unsplash.com/photo-1502672260266-1c1ef2d93688",
+                features: ["Pet Friendly", "Balcony"]
+            },
+            {
+                id: 3, state: "FL", city: "Miami", beds: 3, baths: 2, price: 3200,
+                img: "https://images.unsplash.com/photo-1493809842364-78817add7ffb",
+                features: ["Ocean View", "Doorman"]
+            }
+        ];
+
+        function renderListings() {
+            const container = document.getElementById('listings');
+            container.innerHTML = apartments.map(apt => `
+                <div class="card">
+                    <img src="${apt.img}" alt="${apt.city} Apartment">
+                    <div class="card-body">
+                        <h3>${apt.city}, ${apt.state}</h3>
+                        <div class="price">$${apt.price}/mo</div>
+                        <div>${apt.beds} Bed | ${apt.baths} Bath</div>
+                        <div class="features">${apt.features.join(' • ')}</div>
+                        <button class="apply-btn" onclick="openModal('${apt.city}, ${apt.state}')">
+                            Apply Now - $50 Fee
+                        </button>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function openModal(listing) {
+            document.getElementById('paymentModal').style.display = 'block';
+            // You can log which listing they clicked: console.log(listing);
+        }
+
+        function closeModal() {
+            document.getElementById('paymentModal').style.display = 'none';
+        }
+
+        // Replace YOUR_QR_CODE_IMAGE_URL with actual hosted image URL
+        // Upload your QR image to imgur.com or your hosting, then paste link
+        
+        renderListings();
+    </script>
+</body>
+</html>
